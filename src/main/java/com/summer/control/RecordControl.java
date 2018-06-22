@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,28 +40,54 @@ public class RecordControl {
 
     @RequestMapping(value = "/test",method = RequestMethod.GET)
     public void test(HttpServletRequest req, HttpServletResponse res){
-
+        Tools.init(req,res);
         SqlSession session  =  DBTools.getSession();
         BaseResBean baseResBean = new BaseResBean();
         RecordMapper recordMapper = session.getMapper(RecordMapper.class);
         List<Record> records = recordMapper.selectAllByAtype("image");
         session.close();
         for(int i=0;i<records.size();i++){
+            System.out.println(records.get(i).getId());
+            if(records.get(i).getNetpath()==null){
+                continue;
+            }
+            File file = null;
+            if(records.get(i).getNetpath().startsWith("E:\\record\\")){
 
-            File file  = new File(records.get(i).getNetpath());
+            }else{
+                records.get(i).setNetpath("E:"+records.get(i).getNetpath());
+            }
+            file  = new File(records.get(i).getNetpath());
             if(!file.getParentFile().exists()){
                 file.getParentFile().mkdirs();
             }
             if(file.exists()){
                 continue;
             }
+
             int bytesum = 0;
             int byteread = 0;
-            String str = records.get(i).getNetpath().substring("E:\\record\\".length(),records.get(i).getNetpath().length());
+            String str = "";
+            if(records.get(i).getNetpath().startsWith("E:\\record\\")){
+                str = records.get(i).getNetpath().substring("E:\\record\\".length(),records.get(i).getNetpath().length());
+            }else{
+                str = records.get(i).getNetpath().substring("\\record\\".length(),records.get(i).getNetpath().length());
+            }
             String ss = "http://106.14.161.168:8888/record/"+str.replace("\\","/");
             //String dir = file.getPath().substring(0,"E:\\record\\20180302".length());
+            String[] strs = ss.split("/");
+            String head = "";
+            String name = "";
+            for(int j=0;j<strs.length-1;j++){
+                head+=strs[j]+"/";
+            }
             try {
-                URL url = new URL(ss);
+                name = URLEncoder.encode(strs[strs.length-1],"UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            try {
+                URL url = new URL(head+name);
                 URLConnection conn = url.openConnection();
                 InputStream inStream = conn.getInputStream();
                 FileOutputStream fs = new FileOutputStream(records.get(i).getNetpath());
@@ -77,7 +104,9 @@ public class RecordControl {
                 e.printStackTrace();
             }
 
-            System.out.println(records.size()+"---"+i+"------->"+records.get(i).getNetpath());
+            System.out.println(records.size()+"---"+i+"------->"+(head+name)+"\n"+file.getPath());
+
+            System.out.println("------------------------------------------------------------------------------------------------------------------");
         }
 
 
@@ -240,4 +269,7 @@ public class RecordControl {
         }
         Tools.printOut(rep,baseResBean);
     }
+
+
+
 }
