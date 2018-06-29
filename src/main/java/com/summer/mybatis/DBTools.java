@@ -20,7 +20,7 @@ public class DBTools {
 
     //创建能执行映射文件中sql的sqlSession
     public static SqlSession getSession(){
-        if(1==1){
+        if(sessionFactory==null){
             try {
                 //使用MyBatis提供的Resources类加载mybatis的配置文件
                 File classpath = Resources.getResourceAsFile("");

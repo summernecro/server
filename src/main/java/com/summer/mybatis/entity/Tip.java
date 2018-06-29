@@ -1,7 +1,12 @@
 package com.summer.mybatis.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
+@Getter
+@Setter
 public class Tip {
     private Integer id;
 
@@ -9,37 +14,7 @@ public class Tip {
 
     private Integer tipid;
 
-    private Date ctime;
+    private Long ctime;
 
-    public Integer getId() {
-        return id;
-    }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getRecordid() {
-        return recordid;
-    }
-
-    public void setRecordid(Integer recordid) {
-        this.recordid = recordid;
-    }
-
-    public Integer getTipid() {
-        return tipid;
-    }
-
-    public void setTipid(Integer tipid) {
-        this.tipid = tipid;
-    }
-
-    public Date getCtime() {
-        return ctime;
-    }
-
-    public void setCtime(Date ctime) {
-        this.ctime = ctime;
-    }
 }

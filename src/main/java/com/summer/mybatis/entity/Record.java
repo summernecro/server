@@ -3,6 +3,8 @@ package com.summer.mybatis.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
 public class Record {
@@ -36,5 +38,7 @@ public class Record {
     private String content;
 
     public int isUploaded = 0;
+
+    ArrayList<Tiplab> tiplabs;
 
 }

@@ -7,7 +7,11 @@ import com.summer.bean.Records;
 import com.summer.global.Value;
 import com.summer.mybatis.DBTools;
 import com.summer.mybatis.entity.Record;
+import com.summer.mybatis.entity.Tip;
+import com.summer.mybatis.entity.Tiplab;
 import com.summer.mybatis.mapper.RecordMapper;
+import com.summer.mybatis.mapper.TipMapper;
+import com.summer.mybatis.mapper.TiplabMapper;
 import com.summer.util.DateFormatUtil;
 import com.summer.util.GsonUtil;
 import com.summer.util.NullUtil;
@@ -112,15 +116,72 @@ public class RecordControl {
 
     }
 
+    @RequestMapping(value = "/addRecordTipsInfo",method = RequestMethod.POST)
+    public void addRecordTipsInfo(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req,res);
+        Record record = GsonUtil.getInstance().fromJson(req.getParameter("data"),Record.class);
+        SqlSession session  =  DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        TiplabMapper tiplabMapper = session.getMapper(TiplabMapper.class);
+        TipMapper tipMapper = session.getMapper(TipMapper.class);
+        List<Tiplab> tiplabs = tiplabMapper.selectTipLabByContent(record.getTiplabs().get(0).getContent());
+
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        //默认都已经上传服务器上有记录 如果没有记录 需要改写代码
+        Record r =  recordMapper.selectRecordWhereLocalPath(record.getLocpath()).get(0);
+        record.setId(r.getId());
+
+        if(tiplabs!=null&&tiplabs.size()>0){
+            //判断本记录是否已经存在这个标签
+            ArrayList<Tip> tips = (ArrayList<Tip>) tipMapper.isTipExist(record.getId(),tiplabs.get(0).getId());
+            if(tips==null|| tips.size()==0){
+                Tip tip = new Tip();
+                tip.setRecordid(record.getId());
+                tip.setCtime(System.currentTimeMillis());
+                tip.setTipid(tiplabs.get(0).getId());
+                tipMapper.insert(tip);
+                session.commit();
+            }
+        }else{
+            Tiplab tiplab = new Tiplab();
+            tiplab.setContent(record.getTiplabs().get(0).getContent());
+            tiplab.setCtime(System.currentTimeMillis());
+
+            tiplabMapper.insert(tiplab);
+            int tiplabid =  tiplabMapper.selectTipLabByContent(tiplab.getContent()).get(0).getId();
+
+            Tip tip = new Tip();
+            tip.setRecordid(record.getId());
+            tip.setCtime(System.currentTimeMillis());
+            tip.setTipid(tiplabid);
+
+            tipMapper.insert(tip);
+            session.commit();
+        }
+
+        Tools.printOut(res,baseResBean);
+        session.close();
+
+    }
+
+
     @RequestMapping(value = "/getAllRecords",method = RequestMethod.GET)
     public void getAllRecords(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
         String atype = req.getParameter("atype");
+        String startTime = req.getParameter("startTime");
+        if(startTime==null){
+            startTime = new Date(0).getTime()+"";
+        }
+        String endTime = req.getParameter("endTime");
+        if(endTime==null){
+            endTime = System.currentTimeMillis()+"";
+        }
         SqlSession session  =  DBTools.getSession();
         BaseResBean baseResBean = new BaseResBean();
         RecordMapper recordMapper = session.getMapper(RecordMapper.class);
         baseResBean.setData(recordMapper.selectAllByAtype(atype));
-        baseResBean.setOther(recordMapper.getUploadNum(atype)+"/"+recordMapper.getRecordCount(atype));
+        baseResBean.setOther(recordMapper.getRecordCountWithSE(atype,startTime,endTime)+"/"+recordMapper.getUploadNumWithSE(atype,startTime,endTime));
         Tools.printOut(res,baseResBean);
         session.close();
     }
@@ -129,12 +190,20 @@ public class RecordControl {
     public void getRecordInfo(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
         String atype = req.getParameter("atype");
+        String startTime = req.getParameter("startTime");
+        if(startTime==null){
+            startTime = new Date(0).getTime()+"";
+        }
+        String endTime = req.getParameter("endTime");
+        if(endTime==null){
+            endTime = System.currentTimeMillis()+"";
+        }
         SqlSession session  =  DBTools.getSession();
         BaseResBean baseResBean = new BaseResBean();
         RecordMapper recordMapper = session.getMapper(RecordMapper.class);
         Records records = new Records();
-        records.setAllNum(recordMapper.getRecordCount(atype));
-        records.setDoneNum(recordMapper.getUploadNum(atype));
+        records.setAllNum(recordMapper.getRecordCountWithSE(atype,startTime,endTime));
+        records.setDoneNum(recordMapper.getUploadNumWithSE(atype,startTime,endTime));
         baseResBean.setData(records);
         Tools.printOut(res,baseResBean);
         session.close();

@@ -2,13 +2,8 @@ package com.summer.mybatis.mapper;
 
 import com.summer.mybatis.entity.Tiplab;
 import java.util.List;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectKey;
-import org.apache.ibatis.annotations.Update;
+
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
 public interface TiplabMapper {
@@ -22,7 +17,7 @@ public interface TiplabMapper {
         "insert into tiplab (content, enable, ",
         "ctime)",
         "values (#{content,jdbcType=VARCHAR}, #{enable,jdbcType=INTEGER}, ",
-        "#{ctime,jdbcType=TIMESTAMP})"
+        "#{ctime,jdbcType=BIGINT})"
     })
     @SelectKey(statement="SELECT LAST_INSERT_ID()", keyProperty="id", before=false, resultType=Integer.class)
     int insert(Tiplab record);
@@ -37,7 +32,7 @@ public interface TiplabMapper {
         @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
         @Result(column="content", property="content", jdbcType=JdbcType.VARCHAR),
         @Result(column="enable", property="enable", jdbcType=JdbcType.INTEGER),
-        @Result(column="ctime", property="ctime", jdbcType=JdbcType.TIMESTAMP)
+        @Result(column="ctime", property="ctime", jdbcType=JdbcType.BIGINT)
     })
     Tiplab selectByPrimaryKey(Integer id);
 
@@ -50,7 +45,7 @@ public interface TiplabMapper {
         @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
         @Result(column="content", property="content", jdbcType=JdbcType.VARCHAR),
         @Result(column="enable", property="enable", jdbcType=JdbcType.INTEGER),
-        @Result(column="ctime", property="ctime", jdbcType=JdbcType.TIMESTAMP)
+        @Result(column="ctime", property="ctime", jdbcType=JdbcType.BIGINT)
     })
     List<Tiplab> selectAll();
 
@@ -58,8 +53,14 @@ public interface TiplabMapper {
         "update tiplab",
         "set content = #{content,jdbcType=VARCHAR},",
           "enable = #{enable,jdbcType=INTEGER},",
-          "ctime = #{ctime,jdbcType=TIMESTAMP}",
+          "ctime = #{ctime,jdbcType=BIGINT}",
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(Tiplab record);
+
+    @Select({"select * from tiplab where content = #{content,jdbcType = VARCHAR}"})
+    List<Tiplab> selectTipLabByContent(@Param("content") String content);
+
+    @Select({"select * from tiplab where content like concat('%',#{content,jdbcType = VARCHAR},'%')"})
+    List<Tiplab> selectLikeTipLabByContent(@Param("content") String content);
 }

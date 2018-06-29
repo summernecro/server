@@ -91,8 +91,14 @@ public interface RecordMapper {
     @Select({"select count(id) from record where atype = #{atype,jdbcType=VARCHAR}"})
     int getRecordCount(@Param("atype") String atype);
 
+    @Select({"select count(id) from record where atype = #{atype,jdbcType=VARCHAR} and ctime>= #{start,jdbcType=VARCHAR} and ctime< #{end,jdbcType=VARCHAR}"})
+    int getRecordCountWithSE(@Param("atype") String atype,@Param("start")String start,@Param("end")String end);
+
     @Select({"select count(id) from record where netpath!='' and atype = #{atype,jdbcType=VARCHAR}"})
     int getUploadNum(@Param("atype") String atype);
+
+    @Select({"select count(id) from record where netpath!='' and atype = #{atype,jdbcType=VARCHAR} and ctime>= #{start,jdbcType=VARCHAR} and ctime< #{end,jdbcType=VARCHAR}"})
+    int getUploadNumWithSE(@Param("atype") String atype,@Param("start")String start,@Param("end")String end);
 
 
     @Select({"select * from record where locpath = #{locpath,jdbcType=VARCHAR}"})
