@@ -146,7 +146,15 @@ public class RecordControl {
 
         RecordMapper recordMapper = session.getMapper(RecordMapper.class);
         //默认都已经上传服务器上有记录 如果没有记录 需要改写代码
-        Record r =  recordMapper.selectRecordWhereLocalPath(record.getLocpath()).get(0);
+        ArrayList<Record> records = (ArrayList<Record>) recordMapper.selectRecordWhereLocalPath(record.getLocpath());
+        if(records==null||records.size()==0){
+            baseResBean.setData("");
+            baseResBean.setErrorMessage("未上传");
+            Tools.printOut(res,baseResBean);
+            session.close();
+            return;
+        }
+        Record r =  records.get(0);
         record.setId(r.getId());
 
         if(tiplabs!=null&&tiplabs.size()>0){
