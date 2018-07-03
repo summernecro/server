@@ -25,7 +25,7 @@
         <!-- 实体类所在包名 -->
         <javaModelGenerator targetPackage="${modelPackage}" targetProject="${src_main_java}">
             <property name="enableSubPackages" value="true"></property>
-            <property name="trimStrings" value="true"></property>
+            <property name="trimStrings" value="false"></property>
         </javaModelGenerator>
 
         <!-- xml 所在包名 -->
@@ -33,14 +33,14 @@
             <property name="enableSubPackages" value="true"></property>
         </sqlMapGenerator>
 
-        <!-- mapper 所在包名 -->
-        <javaClientGenerator targetPackage="${mapperPackage}" targetProject="${src_main_java}" type="ANNOTATEDMAPPER">
+        <!-- mapper 所在包名 http://www.mybatis.org/generator/configreference/javaClientGenerator.html   type   ANNOTATEDMAPPER  -->
+        <javaClientGenerator targetPackage="${mapperPackage}" targetProject="${src_main_java}" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
         <!-- 要生成的表 -->
         <!-- 这里的百分号代表对该数据库中所有的表进行生成 -->
-        <table tableName="%">
+        <table tableName="Crash">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
     </context>

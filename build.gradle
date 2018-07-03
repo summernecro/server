@@ -40,7 +40,6 @@ dependencies {
 }
 
 
-
 def getDbProperties = {
     def properties = new Properties()
     file("src/main/webapp/WEB-INF/dbinfo.properties").withInputStream { inputStream ->
@@ -48,6 +47,8 @@ def getDbProperties = {
     }
     properties
 }
+
+
 
 task mybatisGenerate << {
     def properties = getDbProperties()
