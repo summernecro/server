@@ -67,8 +67,15 @@ public interface RecordMapper {
     })
     List<Record> selectAll();
 
-    @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR}"})
+    @Select({"select count(id) from record where atype = #{atype,jdbcType=VARCHAR}"})
+    int selectCount();
+
+    @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} order by ctime desc"})
     List<Record> selectAllByAtype(@Param("atype") String atype);
+
+
+    @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} limit 16 offset #{offset,jdbcType=INTEGER}"})
+    List<Record> selectAllByAtypeStep(@Param("atype") String atype,@Param("offset") Integer offset);
 
     @Update({
         "update record",

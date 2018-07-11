@@ -32,6 +32,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +51,8 @@ public class RecordControl {
         BaseResBean baseResBean = new BaseResBean();
 
         Crash crash = GsonUtil.getInstance().fromJson(req.getParameter("data"),Crash.class);
-        SqlSession session = DBTools.getSession();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+        crash.setTimestr(format.format(new Date()));        SqlSession session = DBTools.getSession();
         CrashMapper crashMapper =  session.getMapper(CrashMapper.class);
         crashMapper.insert(crash);
         session.commit();
@@ -258,6 +260,35 @@ public class RecordControl {
         Tools.printOut(res,baseResBean);
         session.close();
     }
+
+    @RequestMapping(value = "/getAllRecordsStep",method = RequestMethod.GET)
+    public void getAllRecordsStep(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req,res);
+        String atype = req.getParameter("atype");
+        String index = req.getParameter("pageindex");
+        String startTime = req.getParameter("startTime");
+        if(startTime==null){
+            startTime = new Date(0).getTime()+"";
+        }
+        String endTime = req.getParameter("endTime");
+        if(endTime==null){
+            endTime = System.currentTimeMillis()+"";
+        }
+        SqlSession session  =  DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        int a = Integer.parseInt(index);
+        int count = recordMapper.getRecordCount(atype);
+        int offset = count-(a+1)*16;
+        if(offset<0){
+            offset=0;
+        }
+        baseResBean.setData(recordMapper.selectAllByAtypeStep(atype,offset));
+        baseResBean.setOther(recordMapper.getRecordCountWithSE(atype,startTime,endTime)+"/"+recordMapper.getUploadNumWithSE(atype,startTime,endTime));
+        Tools.printOut(res,baseResBean);
+        session.close();
+    }
+
 
     @RequestMapping(value = "/getRecordInfo",method = RequestMethod.GET)
     public void getRecordInfo(HttpServletRequest req, HttpServletResponse res){

@@ -7,6 +7,8 @@ public class Crash {
 
     private Integer platform;
 
+    private String timestr;
+
     private String error;
 
     private String user;
@@ -33,6 +35,14 @@ public class Crash {
 
     public void setPlatform(Integer platform) {
         this.platform = platform;
+    }
+
+    public String getTimestr() {
+        return timestr;
+    }
+
+    public void setTimestr(String timestr) {
+        this.timestr = timestr;
     }
 
     public String getError() {
