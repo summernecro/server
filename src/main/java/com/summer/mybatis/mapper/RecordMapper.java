@@ -73,6 +73,10 @@ public interface RecordMapper {
     @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} order by ctime desc"})
     List<Record> selectAllByAtype(@Param("atype") String atype);
 
+    @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} and ctime>= #{start,jdbcType=VARCHAR} and ctime< #{end,jdbcType=VARCHAR} order by ctime desc"})
+    List<Record> selectAllByAtypeWithSE(@Param("atype") String atype,@Param("start")String start,@Param("end")String end);
+
+
 
     @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} limit 16 offset #{offset,jdbcType=INTEGER}"})
     List<Record> selectAllByAtypeStep(@Param("atype") String atype,@Param("offset") Integer offset);
@@ -101,6 +105,12 @@ public interface RecordMapper {
     @Select({"select count(id) from record where atype = #{atype,jdbcType=VARCHAR} and ctime>= #{start,jdbcType=VARCHAR} and ctime< #{end,jdbcType=VARCHAR}"})
     int getRecordCountWithSE(@Param("atype") String atype,@Param("start")String start,@Param("end")String end);
 
+    @Select({"select max(ctime) from record where atype = #{atype,jdbcType=VARCHAR}"})
+    long getRecordMaxDate(@Param("atype") String atype);
+
+    @Select({"select min(ctime) from record where atype = #{atype,jdbcType=VARCHAR}"})
+    long getRecordMinDate(@Param("atype") String atype);
+
     @Select({"select count(id) from record where netpath!='' and atype = #{atype,jdbcType=VARCHAR}"})
     int getUploadNum(@Param("atype") String atype);
 
@@ -113,5 +123,7 @@ public interface RecordMapper {
 
     @Update({"update record set netpath = #{netpath,jdbcType=VARCHAR} where locpath = #{locpath,jdbcType=VARCHAR}"})
     int updateNetPath(@Param("netpath") String netpath, @Param("locpath") String locpath);
+
+    List<Record> selectAllByTypes(@Param("atype") String atype);
 
 }

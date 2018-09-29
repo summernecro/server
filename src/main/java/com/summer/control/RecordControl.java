@@ -10,10 +10,7 @@ import com.summer.mybatis.entity.Crash;
 import com.summer.mybatis.entity.Record;
 import com.summer.mybatis.entity.Tip;
 import com.summer.mybatis.entity.Tiplab;
-import com.summer.mybatis.mapper.CrashMapper;
-import com.summer.mybatis.mapper.RecordMapper;
-import com.summer.mybatis.mapper.TipMapper;
-import com.summer.mybatis.mapper.TiplabMapper;
+import com.summer.mybatis.mapper.*;
 import com.summer.util.DateFormatUtil;
 import com.summer.util.GsonUtil;
 import com.summer.util.NullUtil;
@@ -34,6 +31,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -134,6 +132,19 @@ public class RecordControl {
         }
 
 
+    }
+
+
+    @RequestMapping(value = "/test2",method = RequestMethod.GET)
+    public void test2(HttpServletRequest req, HttpServletResponse res) {
+        Tools.init(req, res);
+        SqlSession session = DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        TestMapper recordMapper = session.getMapper(TestMapper.class);
+        List<Record> records = recordMapper.selectSome(187);
+        baseResBean.setData(records);
+        Tools.printOut(res,baseResBean);
+        session.close();
     }
 
     @RequestMapping(value = "/addRecordTipsInfo",method = RequestMethod.POST)
@@ -255,11 +266,33 @@ public class RecordControl {
         SqlSession session  =  DBTools.getSession();
         BaseResBean baseResBean = new BaseResBean();
         RecordMapper recordMapper = session.getMapper(RecordMapper.class);
-        baseResBean.setData(recordMapper.selectAllByAtype(atype));
+        baseResBean.setData(recordMapper.selectAllByAtypeWithSE(atype,startTime,endTime));
         baseResBean.setOther(recordMapper.getRecordCountWithSE(atype,startTime,endTime)+"/"+recordMapper.getUploadNumWithSE(atype,startTime,endTime));
         Tools.printOut(res,baseResBean);
         session.close();
     }
+
+
+    @RequestMapping(value = "/getMaxMinYear",method = RequestMethod.GET)
+    public void getMaxMinYear(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req,res);
+        String atype = req.getParameter("atype");
+        SqlSession session  =  DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+
+        int ma =0,mi=0;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date(recordMapper.getRecordMaxDate(atype)));
+        ma = calendar.get(Calendar.YEAR);
+        calendar.setTime(new Date(recordMapper.getRecordMinDate(atype)));
+        mi = calendar.get(Calendar.YEAR);
+        int[] ints = new int[]{mi,ma};
+        baseResBean.setData(ints);
+        Tools.printOut(res,baseResBean);
+        session.close();
+    }
+
 
     @RequestMapping(value = "/getAllRecordsStep",method = RequestMethod.GET)
     public void getAllRecordsStep(HttpServletRequest req, HttpServletResponse res){
