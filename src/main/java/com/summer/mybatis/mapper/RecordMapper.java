@@ -17,11 +17,11 @@ public interface RecordMapper {
         "insert into record (locpath, netpath, ",
         "ctime, utime, atype, ",
         "btype, address, ",
-        "duration, name, content)",
+        "duration, name, content,classify)",
         "values (#{locpath,jdbcType=VARCHAR}, #{netpath,jdbcType=VARCHAR}, ",
         "#{ctime,jdbcType=BIGINT}, #{utime,jdbcType=BIGINT}, #{atype,jdbcType=VARCHAR}, ",
         "#{btype,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, ",
-        "#{duration,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR})"
+        "#{duration,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{content,jdbcType=LONGVARCHAR},#{classify,jdbcType=INTEGER})"
     })
     @SelectKey(statement="SELECT LAST_INSERT_ID()", keyProperty="id", before=false, resultType=Integer.class)
     int insert(Record record);
@@ -43,7 +43,8 @@ public interface RecordMapper {
         @Result(column="address", property="address", jdbcType=JdbcType.VARCHAR),
         @Result(column="duration", property="duration", jdbcType=JdbcType.BIGINT),
         @Result(column="name", property="name", jdbcType=JdbcType.VARCHAR),
-        @Result(column="content", property="content", jdbcType=JdbcType.LONGVARCHAR)
+        @Result(column="content", property="content", jdbcType=JdbcType.LONGVARCHAR),
+            @Result(column="classify", property="classify", jdbcType=JdbcType.INTEGER)
     })
     Record selectByPrimaryKey(Integer id);
 
@@ -63,7 +64,8 @@ public interface RecordMapper {
         @Result(column="address", property="address", jdbcType=JdbcType.VARCHAR),
         @Result(column="duration", property="duration", jdbcType=JdbcType.BIGINT),
         @Result(column="name", property="name", jdbcType=JdbcType.VARCHAR),
-        @Result(column="content", property="content", jdbcType=JdbcType.LONGVARCHAR)
+        @Result(column="content", property="content", jdbcType=JdbcType.LONGVARCHAR),
+            @Result(column="classify", property="classify", jdbcType=JdbcType.INTEGER)
     })
     List<Record> selectAll();
 
@@ -93,6 +95,7 @@ public interface RecordMapper {
           "duration = #{duration,jdbcType=BIGINT},",
           "name = #{name,jdbcType=VARCHAR},",
           "content = #{content,jdbcType=LONGVARCHAR}",
+            "classify = #{classify,jdbcType=INTEGER}",
         "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(Record record);
@@ -125,5 +128,11 @@ public interface RecordMapper {
     int updateNetPath(@Param("netpath") String netpath, @Param("locpath") String locpath);
 
     List<Record> selectAllByTypes(@Param("atype") String atype);
+
+    List<Record> selectAllByTypesWithLimit(String atype,Integer start,Integer count);
+
+    List<Record> selectAllNotImageCheckWithLimit(Integer count);
+
+    int updateClassify(Integer recordid,Integer value);
 
 }

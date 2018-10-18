@@ -13,11 +13,24 @@
     <id column="duration" jdbcType="BIGINT" property="duration" />
     <id column="name" jdbcType="VARCHAR" property="name" />
     <id column="content" jdbcType="VARCHAR" property="content" />
+    <id column="classify" jdbcType="INTEGER" property="classify" />
   </resultMap>
-<select id="selectAllByTypes" parameterType="string" resultMap="Lists">
+
+    <select id="selectAllByTypes" parameterType="string" resultMap="Lists">
   select * from Record where atype = #{atype,jdbcType=VARCHAR}
 </select>
 
 
+  <select id="selectAllByTypesWithLimit" resultMap="Lists">
+      select * from Record where atype = #{arg0} limit #{arg1},#{arg2}
+  </select>
+    <select id="selectAllNotImageCheckWithLimit" resultMap="Lists">
+        select * from Record where atype = 'image' and classify = 0  limit #{arg0}
+    </select>
+
+
+    <update id="updateClassify">
+    update record set classify = #{arg1} where id = #{arg0}
+  </update>
 
 </mapper>

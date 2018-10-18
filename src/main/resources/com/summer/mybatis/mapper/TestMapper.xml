@@ -15,7 +15,7 @@
     <id column="content" jdbcType="VARCHAR" property="content" />
   </resultMap>
   <select id="selectSome" resultMap="Bean">
-    select * from record,tip,tiplab where tip.recordid = record.id and tip.tipid = tiplab.id and tip.id = #{0}
+    select * from record,tip,tiplab where tip.recordid = record.id and tip.tipid = tiplab.id and tip.id = #{arg0}
   </select>
 
 
