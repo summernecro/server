@@ -48,6 +48,28 @@ public class TipLabControl {
 
     }
 
+    @RequestMapping(value = "/getImageRecordsFromTip",method = RequestMethod.POST)
+    public void getImageRecordsFromTip(HttpServletRequest req, HttpServletResponse res) {
+        Tools.init(req, res);
+        Tiplab tiplab = GsonUtil.getInstance().fromJson(req.getParameter("data"),Tiplab.class);
+        SqlSession session  =  DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        TipMapper tipMapper = session.getMapper(TipMapper.class);
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        ArrayList<Tip> tips = (ArrayList<Tip>) tipMapper.selectTipsByTipId(tiplab.getId());
+        ArrayList<Record> records = new ArrayList<>();
+        for(int i=0;tips!=null&&i<tips.size();i++){
+            Record record = recordMapper.selectByPrimaryKey(tips.get(i).getRecordid());
+            if(record!=null&&Record.ATYPE_IMAGE.equals(record.getAtype())){
+                records.add(record);
+            }
+        }
+        baseResBean.setData(records);
+        Tools.printOut(res,baseResBean);
+        session.close();
+
+    }
+
     @RequestMapping(value = "/getRecordTips",method = RequestMethod.POST)
     public void getRecordTips(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
@@ -128,6 +150,20 @@ public class TipLabControl {
         Tools.printOut(res,baseResBean);
         session.commit();
         session.close();
+    }
+
+    @RequestMapping(value = "/getAllTipLabs",method = RequestMethod.GET)
+    public void getAllTipLabs(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req, res);
+        SqlSession sqlSession = DBTools.getSession();
+        TiplabMapper tiplabMapper = sqlSession.getMapper(TiplabMapper.class);
+        ArrayList<Tiplab> tiplabs = (ArrayList<Tiplab>) tiplabMapper.selectAll();
+        BaseResBean baseResBean = new BaseResBean();
+        baseResBean.setData(tiplabs);
+        Tools.printOut(res,baseResBean);
+        sqlSession.commit();
+        sqlSession.close();
+
     }
 
 

@@ -31,13 +31,13 @@ public class QuartzTask {
     /**
      * 每天4点触发（清空验证码表t_captcha中的数据）
      */
-    @Scheduled(cron = "0 0 4 * * ?")
+    @Scheduled(cron = "0 0 4 ? * *")
     public void testTask(){
         System.out.println("test quarttask"+System.currentTimeMillis());
 
         BaseResBean baseResBean = new BaseResBean();
         baseResBean.setData("0");
-        String str = HttpRequest.sendPost("http://www.summernecro.com/record/imageclassify/classify", baseResBean, null);
-        System.out.println(str);
+        //String str = HttpRequest.sendGet("http://www.summernecro.com:8888/record/imageclassify/classify", baseResBean, null);
+        //System.out.println(str);
     }
 }

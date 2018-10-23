@@ -60,7 +60,7 @@ public class ImageClassiFyControl {
         for(int i=0;i<records.size();i++){
 
          //改记录已经识别过一次
-        if(records.get(i).getClassify()==1){
+        if(records.get(i).getClassify()==1||records.get(i).getClassify()==2){
             continue;
         }
 
@@ -84,12 +84,18 @@ public class ImageClassiFyControl {
 
         //返回的识别特征为0或识别错误 继续下一个
         if(imageClassifyRes==null||imageClassifyRes.getError_code()!=null||imageClassifyRes.getResult_num()==0){
+            //标记改record已经识别过一次 并且无法识别
+            recordMapper.updateClassify(records.get(i).getId(),2);
             continue;
         }
 
         //依次将特征与record关联
         for(int j=0;j<imageClassifyRes.getResult_num();j++){
-
+            float score = Float.parseFloat(imageClassifyRes.getResult().get(j).getScore());
+            //去除掉匹配度低的特征
+            if(score<0.5){
+                continue;
+            }
             //检查特征库中是否存在该特征
             List<Tiplab> tiplabs = tiplabMapper.selectTipLabByContent(imageClassifyRes.getResult().get(j).getKeyword());
             //有该特征
