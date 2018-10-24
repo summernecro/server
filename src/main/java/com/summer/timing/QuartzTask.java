@@ -2,10 +2,13 @@ package com.summer.timing;
 
 import com.summer.base.bean.BaseResBean;
 import com.summer.imageclassfy.AccessTokenBean;
+import com.summer.util.DateFormatUtil;
 import com.summer.util.HttpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 import static com.summer.util.HttpRequest.sendPost;
 
@@ -31,13 +34,13 @@ public class QuartzTask {
     /**
      * 每天4点触发（清空验证码表t_captcha中的数据）
      */
-    @Scheduled(cron = "0 0 4 ? * *")
+    @Scheduled(cron = "0 10 4 * * ?")
     public void testTask(){
-        System.out.println("test quarttask"+System.currentTimeMillis());
+        System.out.println("test quarttask "+DateFormatUtil.getdDateStr(DateFormatUtil.SECOND+"-"+DateFormatUtil.MINUTE+"-"+DateFormatUtil.HOUR,new Date()));
 
         BaseResBean baseResBean = new BaseResBean();
         baseResBean.setData("0");
-        //String str = HttpRequest.sendGet("http://www.summernecro.com:8888/record/imageclassify/classify", baseResBean, null);
-        //System.out.println(str);
+        String str = HttpRequest.sendGet("http://www.summernecro.com:8888/record/imageclassify/classify", baseResBean, null);
+        System.out.println(str);
     }
 }
