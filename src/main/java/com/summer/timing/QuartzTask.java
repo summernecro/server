@@ -40,7 +40,12 @@ public class QuartzTask {
 
         BaseResBean baseResBean = new BaseResBean();
         baseResBean.setData("0");
-        String str = HttpRequest.sendGet("http://www.summernecro.com:8888/record/imageclassify/classify", baseResBean, null);
+        String str = HttpRequest.sendGet("http://222.186.36.75:8888/record/imageclassify/classify", baseResBean, null);
         System.out.println(str);
+    }
+
+    @Scheduled(cron = "0 0 4 * * ?")
+    public void testTask2(){
+
     }
 }
