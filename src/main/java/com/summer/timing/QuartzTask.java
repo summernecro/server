@@ -44,8 +44,9 @@ public class QuartzTask {
         System.out.println(str);
     }
 
-    @Scheduled(cron = "0 0 4 * * ?")
+    @Scheduled(cron = "0 */10 * * * ?")
     public void testTask2(){
-
+        System.out.println("testTask2--"+DateFormatUtil.getNowStr(DateFormatUtil.YYYY_MM_DD_HH_MM_SS));
     }
+
 }
