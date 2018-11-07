@@ -83,6 +83,10 @@ public interface RecordMapper {
     @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} limit 16 offset #{offset,jdbcType=INTEGER}"})
     List<Record> selectAllByAtypeStep(@Param("atype") String atype,@Param("offset") Integer offset);
 
+
+    @Select({ "select * from record where atype = #{atype,jdbcType=VARCHAR} limit #{limit,jdbcType=INTEGER} offset #{offset,jdbcType=INTEGER}"})
+    List<Record> selectAllByAtypeStepLimit(@Param("atype") String atype,@Param("limit") Integer limit,@Param("offset") Integer offset);
+
     @Update({
         "update record",
         "set locpath = #{locpath,jdbcType=VARCHAR},",

@@ -60,7 +60,7 @@ public class ImageClassiFyControl {
         for(int i=0;i<records.size();i++){
 
          //改记录已经识别过一次
-        if(records.get(i).getClassify()==1||records.get(i).getClassify()==2){
+        if(records.get(i).getClassify()!=0){
             continue;
         }
 
@@ -72,14 +72,25 @@ public class ImageClassiFyControl {
             image = URLEncoder.encode(Base64Image.getImageStr(records.get(i).getNetpath()),"UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            recordMapper.updateClassify(records.get(i).getId(),3);
             continue;
         }
         imageClassifyBean.setImage(image);
         BaseResBean bean = new BaseResBean();
         bean.setData(imageClassifyBean);
 
-        String out = HttpRequest.sendPost("https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general",bean,null);
-        System.out.println(records.get(i).getId()+" -- 第"+i+"："+out);
+            String out = null;
+            try {
+                out = HttpRequest.sendPost("https://aip.baidubce.com/rest/2.0/image-classify/v2/advanced_general",bean,null);
+            } catch (Exception e) {
+                //标记为post图片参数太大
+                recordMapper.updateClassify(records.get(i).getId(),4);
+                e.printStackTrace();
+                continue;
+            } finally {
+                System.out.println(records.get(i).getId()+" -- 第"+i+"："+out);
+            }
+
         ImageClassifyRes imageClassifyRes = GsonUtil.getInstance().fromJson(out,ImageClassifyRes.class);
 
         //返回的识别特征为0或识别错误 继续下一个

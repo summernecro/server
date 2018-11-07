@@ -323,6 +323,37 @@ public class RecordControl {
     }
 
 
+    @RequestMapping(value = "/getAllRecordsStepwithLimit",method = RequestMethod.GET)
+    public void getAllRecordsStepwithLimit(HttpServletRequest req, HttpServletResponse res){
+        Tools.init(req,res);
+        String atype = req.getParameter("atype");
+        String limit = req.getParameter("limit");
+        String index = req.getParameter("pageindex");
+        String startTime = req.getParameter("startTime");
+        if(startTime==null){
+            startTime = new Date(0).getTime()+"";
+        }
+        String endTime = req.getParameter("endTime");
+        if(endTime==null){
+            endTime = System.currentTimeMillis()+"";
+        }
+        SqlSession session  =  DBTools.getSession();
+        BaseResBean baseResBean = new BaseResBean();
+        RecordMapper recordMapper = session.getMapper(RecordMapper.class);
+        int a = Integer.parseInt(index);
+        int count = recordMapper.getRecordCount(atype);
+        int lim = Integer.parseInt(limit);
+        int offset = count-(a+1)*lim;
+        if(offset<0){
+            offset=0;
+        }
+        baseResBean.setData(recordMapper.selectAllByAtypeStepLimit(atype,lim,offset));
+        baseResBean.setOther(recordMapper.getRecordCountWithSE(atype,startTime,endTime)+"/"+recordMapper.getUploadNumWithSE(atype,startTime,endTime));
+        Tools.printOut(res,baseResBean);
+        session.close();
+    }
+
+
     @RequestMapping(value = "/getRecordInfo",method = RequestMethod.GET)
     public void getRecordInfo(HttpServletRequest req, HttpServletResponse res){
         Tools.init(req,res);
