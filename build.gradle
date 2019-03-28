@@ -25,10 +25,10 @@ dependencies {
     compile 'org.springframework:spring-webmvc:4.2.4.RELEASE'
     compile 'org.springframework:spring-tx:4.2.4.RELEASE'
     compile 'org.springframework:spring-jdbc:4.2.4.RELEASE'
-    compile 'mysql:mysql-connector-java:5.1.38'
+    compile 'mysql:mysql-connector-java:8.0.15'//数据库连接驱动程序
 
     mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.3.5'
-    mybatisGenerator 'mysql:mysql-connector-java:5.1.40'
+    mybatisGenerator 'mysql:mysql-connector-java:8.0.15'
     mybatisGenerator 'tk.mybatis:mapper:3.3.9'
 
 

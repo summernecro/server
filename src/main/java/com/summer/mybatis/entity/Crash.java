@@ -5,13 +5,13 @@ public class Crash {
 
     private Long createdtime;
 
-    private Integer platform;
+    private String platform;
 
     private String timestr;
 
-    private String error;
-
     private String user;
+
+    private String error;
 
     public Integer getId() {
         return id;
@@ -29,11 +29,11 @@ public class Crash {
         this.createdtime = createdtime;
     }
 
-    public Integer getPlatform() {
+    public String getPlatform() {
         return platform;
     }
 
-    public void setPlatform(Integer platform) {
+    public void setPlatform(String platform) {
         this.platform = platform;
     }
 
@@ -45,19 +45,19 @@ public class Crash {
         this.timestr = timestr;
     }
 
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
-    }
-
     public String getUser() {
         return user;
     }
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }
